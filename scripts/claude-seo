@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""
+hermes-seo launcher — entry point for bundled Python SEO tools.
+
+Cross-platform (Linux, macOS, Windows) replacement for the original
+bash launcher, designed for Hermes Agent skill integration.
+
+Usage:
+    hermes-seo run <script.py> [args...]
+    hermes-seo setup
+    hermes-seo doctor
+    hermes-seo --help
+
+The launcher resolves its own directory, locates the Python environment,
+and execs the requested tool. All bundled scripts are invoked through
+this wrapper, never with a bare Python interpreter.
+"""
+
+import os
+import shutil
+import subprocess
+import sys
+
+RUNTIME_PY = "runtime.py"
+MIN_PYTHON = 11
+MAX_PYTHON = 14
+
+
+def resolve_script_dir() -> str:
+    """Return the absolute directory of this script."""
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def find_supported_python() -> str | None:
+    """Find a Python interpreter in 3.11-3.14 range.
+
+    Priority: current interpreter, then python3, python, py, python3.X.
+    """
+    # 1. Current interpreter is usually fine.
+    exe = sys.executable or ""
+    base = os.path.basename(exe)
+    if base not in ("python3", "python"):
+        return exe
+
+    # 2. Try common names.
+    candidates = ["python3", "python", "py"]
+    minor = MAX_PYTHON
+    while minor >= MIN_PYTHON:
+        candidates.append(f"python{minor}")
+        minor -= 1
+
+    for cand in candidates:
+        try:
+            probe = subprocess.run(
+                [cand, "-c", "import sys; print(sys.version_info[:2])"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            if probe.returncode == 0:
+                try:
+                    major, minor = map(int, probe.stdout.strip().split("."))
+                    if major == 3 and MIN_PYTHON <= minor <= MAX_PYTHON:
+                        return cand
+                except (ValueError, IndexError):
+                    continue
+        except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+            continue
+    return None
+
+
+def main() -> int:
+    script_dir = resolve_script_dir()
+    runtime = os.path.join(script_dir, RUNTIME_PY)
+
+    if not os.path.isfile(runtime):
+        print("Hermes SEO runtime is missing. Reinstall the skill.", file=sys.stderr)
+        return 2
+
+    # Honor CLAUDE_SEO_PYTHON override.
+    env_python = os.environ.get("CLAUDE_SEO_PYTHON")
+    if env_python:
+        candidates = [env_python]
+    else:
+        candidates = find_supported_python() or []
+
+    if not candidates:
+        print(
+            f"Hermes SEO needs Python {MIN_PYTHON}.{MIN_PYTHON} to "
+            f"{MAX_PYTHON}.{MAX_PYTHON}. Install from python.org.",
+            file=sys.stderr,
+        )
+        return 2
+
+    python = candidates[0]
+
+    # Re-exec runtime.py with the same arguments.
+    os.execv(python, [python, runtime] + sys.argv[1:])
+
+
+if __name__ == "__main__":
+    main()

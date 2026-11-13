@@ -1,0 +1,59 @@
+{
+  "name": "hermes-seo",
+  "version": "2.6.0",
+  "description": "Comprehensive SEO analysis skill for Hermes Agent. 26 sub-skills (22 core + 1 orchestrator + 1 framework + 2 extension mirrors) and 19 specialist clusters cover technical SEO, content quality, schema, sitemaps, Core Web Vitals, local SEO, backlinks, AI/GEO, ecommerce, hreflang, SXO, clustering, drift monitoring, and Google APIs. Includes optional MCP extensions, SPA-aware rendering, portability, and hardened SSRF/DNS-rebinding safe fetchers.",
+  "author": {
+    "name": "AgriciDaniel",
+    "url": "https://github.com/AgriciDaniel"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/AgriciDaniel/claude-seo",
+  "repository": "https://github.com/AgriciDaniel/claude-seo",
+  "keywords": [
+    "seo", "technical-seo", "content-quality", "e-e-a-t", "schema-markup",
+    "core-web-vitals", "local-seo", "geo", "ai-search", "sitemap",
+    "image-optimization", "hreflang", "google-search-console", "pagespeed",
+    "crux", "ga4", "backlinks", "semantic-clustering", "topic-clusters",
+    "sxo", "search-experience", "drift-monitoring", "ecommerce-seo",
+    "google-shopping", "cultural-profiles", "ai-citation-optimization",
+    "synthesis-framework"
+  ],
+  "metadata": {
+    "hermes": {
+      "tags": [
+        "seo", "technical-seo", "content-quality", "e-e-a-t", "schema-markup",
+        "core-web-vitals", "local-seo", "geo", "ai-search", "sitemap",
+        "image-optimization", "hreflang", "google-search-console", "pagespeed",
+        "crux", "ga4", "backlinks", "semantic-clustering", "topic-clusters",
+        "sxo", "search-experience", "drift-monitoring", "ecommerce-seo",
+        "google-shopping", "cultural-profiles", "ai-citation-optimization",
+        "synthesis-framework"
+      ],
+      "homepage": "https://github.com/AgriciDaniel/claude-seo",
+      "related_skills": [
+        "technical-seo", "content-strategy", "seo-audit-report"
+      ]
+    },
+    "platforms": ["linux", "macos", "windows"],
+    "skills": 26,
+    "extensions": 9,
+    "python_requires": ">=3.11"
+  },
+  "entrypoints": [
+    {
+      "type": "skill",
+      "path": "skills/seo/SKILL.md",
+      "description": "Main SEO analysis hub skill (/seo command)."
+    },
+    {
+      "type": "launcher",
+      "path": "scripts/claude-seo",
+      "description": "Cross-platform CLI launcher for bundled Python tools."
+    },
+    {
+      "type": "schema",
+      "path": "schema/templates.json",
+      "description": "JSON-LD schema templates for SEO optimization."
+    }
+  ]
+}

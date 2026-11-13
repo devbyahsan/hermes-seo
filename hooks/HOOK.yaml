@@ -1,0 +1,26 @@
+# Hermes event hook — validates JSON-LD structured data after file edits.
+
+# Declares which lifecycle events this hook listens for.
+# Unlike the Claude Code equivalent (PostToolUse matcher), Hermes hooks
+# are declared by event name and run in a Python handler.
+---
+name: schema-validator
+events:
+  - post_edit          # Fire after any file edit
+  - post_write         # Fire after any file write
+  - post_save          # Fire after save operations
+parameters:
+  enabled: true
+  # Only run on files whose extension suggests schema markup
+  file_patterns:
+    - "\\.html$"
+    - "\\.json$"
+    - "\\.jsonld$"
+    - "\\.htm$"
+  # Optional: only run on paths matching /pages?/ or /blog/ or /products/
+  path_patterns:
+    - "pages/"
+    - "blog/"
+    - "products/"
+  handler: "handler.py"
+  timeout_seconds: 30
